@@ -1,7 +1,7 @@
 {
   "name": "moodlearchiver",
   "version": "1.3.7",
-  "homepage": "https://Aathish04.github.io/moodlearchiver",
+  "homepage": ".",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
