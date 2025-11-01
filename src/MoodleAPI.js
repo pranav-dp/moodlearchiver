@@ -90,9 +90,32 @@ export class MoodleClient {
     }
     var courses = []
     for (let courseinfo of data) {
-      courses.push({ "id": courseinfo["id"], "shortname": courseinfo["shortname"] })
+      courses.push({ 
+        "id": courseinfo["id"], 
+        "shortname": courseinfo["shortname"],
+        "fullname": courseinfo["fullname"] || courseinfo["shortname"],
+        "displayname": this.formatCourseDisplayName(courseinfo)
+      })
     }
     return courses;
+  }
+
+  formatCourseDisplayName(courseinfo) {
+    const shortname = courseinfo["shortname"];
+    const fullname = courseinfo["fullname"] || shortname;
+    
+    // Extract components from shortname (e.g., UCS2502-MPLab-B-2025)
+    const parts = shortname.split('-');
+    if (parts.length >= 3) {
+      const courseCode = parts[0];
+      const subject = parts[1];
+      const section = parts[2];
+      const year = parts[3] || '';
+      
+      return `${courseCode} - ${fullname} - Section ${section}${year ? ' - ' + year : ''}`;
+    }
+    
+    return `${shortname} - ${fullname}`;
   }
 
   async getUserAssignments(courses) {
@@ -265,7 +288,7 @@ export class MoodleClient {
     return this.files;
   }
 
-  async downloadFilesIntoZIP(onProgress) {
+  async downloadFilesIntoZIP(onProgress, filename = 'MoodleArchive.zip') {
     let jszip = new JSZip();
     let totalFiles = 0;
     let downloadedFiles = 0;
@@ -303,7 +326,7 @@ export class MoodleClient {
         }
       }
     }
-    jszip.generateAsync({ type: "blob" }).then(function(blob) { saveAs(blob, `MoodleArchive.zip`); });
+    jszip.generateAsync({ type: "blob" }).then(function(blob) { saveAs(blob, filename); });
   }
 }
 
